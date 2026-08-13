@@ -1,0 +1,115 @@
+/*
+ * Evening reading-room: a book page and an index-card box for the words
+ * you stop on. Fraunces carries the passage and headings (literary,
+ * warm), Inter runs the interface chrome, and IBM Plex Mono marks
+ * anything that reads like a catalog entry — headwords, dates, counts.
+ */
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap");
+
+:root {
+  color-scheme: dark;
+
+  /* surfaces: warm ink, not neutral black */
+  --ink-950: #17140f;
+  --ink-900: #211d17;
+  --ink-800: #2c2721;
+  --ink-700: #423a2f;
+  --ink-600: #5c5245;
+
+  /* ink on paper */
+  --paper: #f3ead9;
+  --paper-dim: #a89b86;
+  --paper-faint: #786c5a;
+
+  /* the marker pen + ribbon bookmark */
+  --highlighter: #f0b429;
+  --highlighter-hover: #ffca4a;
+  --highlighter-ink: #362702;
+  --ribbon: #c65c3b;
+  --ribbon-hover: #dd6c49;
+  --ok: #8caa6e;
+  --ok-bg: rgba(140, 170, 110, 0.14);
+  --err: #e2604f;
+  --err-bg: rgba(226, 96, 79, 0.14);
+
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-ui: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --radius-sm: 5px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+  --dur: 160ms;
+
+  font: 16px/1.6 var(--font-ui);
+  color: var(--paper-dim);
+  background: var(--ink-950);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(ellipse 900px 500px at 15% -10%, rgba(240, 180, 41, 0.06), transparent 60%),
+    var(--ink-950);
+  min-height: 100svh;
+}
+
+#root {
+  min-height: 100svh;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--paper);
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+::selection {
+  background: var(--highlighter);
+  color: var(--highlighter-ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--highlighter);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar {
+  width: 11px;
+  height: 11px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--ink-700);
+  border-radius: 99px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
