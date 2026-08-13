@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://__BACKEND_URL__/api/:path*"
+      "destination": "https://learning-english-words-production.up.railway.app/api/:path*"
     }
   ]
 }
