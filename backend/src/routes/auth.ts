@@ -185,7 +185,8 @@ authRouter.post(
 
     if (user) {
       const token = await createPasswordResetToken(user.id);
-      const resetUrl = `${process.env.FRONTEND_URL}/?reset_token=${token}`;
+      const frontendUrl = (process.env.FRONTEND_URL ?? "").replace(/\/+$/, "");
+      const resetUrl = `${frontendUrl}/?reset_token=${token}`;
       try {
         await sendPasswordResetEmail(normalizedEmail, resetUrl);
       } catch (err) {
