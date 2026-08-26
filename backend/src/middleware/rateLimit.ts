@@ -27,6 +27,16 @@ export const registerLimiter = rateLimit({
   message: { error: "Too many accounts created from this IP, try again later." },
 });
 
+// Per-IP backstop on forgot-password requests, so the endpoint can't be used
+// to mass-email arbitrary addresses or brute-force which emails are registered.
+export const forgotPasswordLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Too many password reset requests, try again later." },
+});
+
 // Safety cap by IP; the actual "1 per day" rule is enforced per-user in routes/topics.ts.
 export const topicCreationLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,

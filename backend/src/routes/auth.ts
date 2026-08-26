@@ -2,9 +2,13 @@ import { Router } from "express";
 import { pool } from "../db/pool";
 import { asyncHandler } from "../middleware/errorHandler";
 import { clearSessionCookieOptions, requireAuth, sessionCookieOptions } from "../middleware/auth";
-import { loginLimiter, registerLimiter } from "../middleware/rateLimit";
+import { forgotPasswordLimiter, loginLimiter, registerLimiter } from "../middleware/rateLimit";
+import { sendPasswordResetEmail } from "../services/emailService";
 import {
+  consumePasswordResetToken,
+  createPasswordResetToken,
   createSession,
+  deleteAllSessionsForUser,
   deleteSession,
   DUMMY_PASSWORD_HASH,
   hashPassword,
@@ -160,5 +164,73 @@ authRouter.get(
       return;
     }
     res.json({ user: result.rows[0] });
+  })
+);
+
+authRouter.post(
+  "/forgot-password",
+  forgotPasswordLimiter,
+  asyncHandler(async (req, res) => {
+    const { email } = req.body as { email?: string };
+    const GENERIC_RESPONSE = { message: "If that email is registered, a reset link has been sent." };
+
+    if (!email || !EMAIL_RE.test(email)) {
+      res.status(400).json({ error: "Please provide a valid email address" });
+      return;
+    }
+
+    const normalizedEmail = normalizeEmail(email);
+    const userResult = await pool.query(`SELECT id FROM users WHERE email = $1`, [normalizedEmail]);
+    const user = userResult.rows[0] as { id: string } | undefined;
+
+    if (user) {
+      const token = await createPasswordResetToken(user.id);
+      const resetUrl = `${process.env.FRONTEND_URL}/?reset_token=${token}`;
+      try {
+        await sendPasswordResetEmail(normalizedEmail, resetUrl);
+      } catch (err) {
+        console.error("Failed to send password reset email", err);
+      }
+    }
+
+    // Same response whether or not the email is registered, so this endpoint
+    // can't be used to enumerate which addresses have accounts.
+    res.status(202).json(GENERIC_RESPONSE);
+  })
+);
+
+authRouter.post(
+  "/reset-password",
+  asyncHandler(async (req, res) => {
+    const { token, password } = req.body as { token?: string; password?: string };
+    const INVALID_TOKEN_ERROR = { error: "This reset link is invalid or has expired." };
+
+    if (!token) {
+      res.status(400).json(INVALID_TOKEN_ERROR);
+      return;
+    }
+    if (!password || password.length < MIN_PASSWORD_LENGTH) {
+      res.status(400).json({ error: `Password must be at least ${MIN_PASSWORD_LENGTH} characters` });
+      return;
+    }
+
+    const userId = await consumePasswordResetToken(token);
+    if (!userId) {
+      res.status(400).json(INVALID_TOKEN_ERROR);
+      return;
+    }
+
+    const passwordHash = await hashPassword(password);
+    const result = await pool.query(
+      `UPDATE users SET password_hash = $1 WHERE id = $2 RETURNING email`,
+      [passwordHash, userId]
+    );
+
+    // Reset invalidates any sessions from before the password change, then
+    // immediately logs the user in on this device with a fresh one.
+    await deleteAllSessionsForUser(userId);
+    const session = await createSession(userId);
+    res.cookie(SESSION_COOKIE_NAME, session.token, sessionCookieOptions());
+    res.json({ user: { id: userId, email: result.rows[0].email } });
   })
 );
