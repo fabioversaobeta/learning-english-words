@@ -5,9 +5,10 @@ import { useAuth } from "../hooks/useAuth";
 interface LoginFormProps {
   onSuccess: () => void;
   onGoToRegister: () => void;
+  onGoToForgotPassword: () => void;
 }
 
-export function LoginForm({ onSuccess, onGoToRegister }: LoginFormProps) {
+export function LoginForm({ onSuccess, onGoToRegister, onGoToForgotPassword }: LoginFormProps) {
   const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -62,6 +63,9 @@ export function LoginForm({ onSuccess, onGoToRegister }: LoginFormProps) {
       {error && <div className="error-banner">{error}</div>}
       <button type="submit" disabled={loading}>
         {loading ? "Logging in..." : "Log in"}
+      </button>
+      <button type="button" className="back-link" onClick={onGoToForgotPassword}>
+        Forgot your password?
       </button>
       <button type="button" className="back-link" onClick={onGoToRegister}>
         Don't have an account? Sign up

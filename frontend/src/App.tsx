@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Home } from "./components/Home";
 import { TopicForm } from "./components/TopicForm";
 import { ContentDisplay } from "./components/ContentDisplay";
@@ -7,6 +7,8 @@ import { ResultsDisplay } from "./components/ResultsDisplay";
 import { HistoryView } from "./components/HistoryView";
 import { LoginForm } from "./components/LoginForm";
 import { RegisterForm } from "./components/RegisterForm";
+import { ForgotPasswordForm } from "./components/ForgotPasswordForm";
+import { ResetPasswordForm } from "./components/ResetPasswordForm";
 import { useApi } from "./hooks/useApi";
 import { useWordSelection } from "./hooks/useWordSelection";
 import { useAuth } from "./hooks/useAuth";
@@ -14,13 +16,27 @@ import { LANGUAGE_OPTIONS, useLanguage } from "./hooks/useLanguage";
 import type { Topic, WordResult } from "./types";
 import "./App.css";
 
-type Step = "home" | "topic" | "content" | "results" | "history" | "login" | "register";
+type Step =
+  | "home"
+  | "topic"
+  | "content"
+  | "results"
+  | "history"
+  | "login"
+  | "register"
+  | "forgot-password"
+  | "reset-password";
 type ProtectedStep = "topic" | "content" | "results" | "history";
+
+// A password reset link points at "/?reset_token=..." (no client-side router
+// in this app), so the token is picked up from the URL once on first render.
+const initialResetToken = new URLSearchParams(window.location.search).get("reset_token");
 
 function App() {
   const { user, loading: authLoading, logout } = useAuth();
   const { language, setLanguage } = useLanguage();
-  const [step, setStep] = useState<Step>("home");
+  const [step, setStep] = useState<Step>(initialResetToken ? "reset-password" : "home");
+  const [resetToken, setResetToken] = useState<string | null>(initialResetToken);
   const [redirectStep, setRedirectStep] = useState<ProtectedStep>("topic");
   const [topic, setTopic] = useState<Topic | null>(null);
   const [results, setResults] = useState<WordResult[]>([]);
@@ -30,6 +46,12 @@ function App() {
 
   const { createTopic, translateWords, retryWords } = useApi();
   const { selectedWords, toggleWord, removeWord, reset } = useWordSelection();
+
+  useEffect(() => {
+    if (initialResetToken) {
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+  }, []);
 
   const handleRestart = () => {
     setTopic(null);
@@ -206,11 +228,29 @@ function App() {
       )}
 
       {step === "login" && (
-        <LoginForm onSuccess={handleAuthSuccess} onGoToRegister={() => setStep("register")} />
+        <LoginForm
+          onSuccess={handleAuthSuccess}
+          onGoToRegister={() => setStep("register")}
+          onGoToForgotPassword={() => setStep("forgot-password")}
+        />
       )}
 
       {step === "register" && (
         <RegisterForm onSuccess={handleAuthSuccess} onGoToLogin={() => setStep("login")} />
+      )}
+
+      {step === "forgot-password" && (
+        <ForgotPasswordForm onGoToLogin={() => setStep("login")} />
+      )}
+
+      {step === "reset-password" && resetToken && (
+        <ResetPasswordForm
+          token={resetToken}
+          onSuccess={() => {
+            setResetToken(null);
+            setStep("home");
+          }}
+        />
       )}
 
       {step === "topic" && user && (
