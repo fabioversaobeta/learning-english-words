@@ -21,3 +21,25 @@ export interface TopicDetail extends TopicSummary {
   content: string;
   words: WordResult[];
 }
+
+export type FlashcardRating = "known" | "doubt" | "unknown";
+
+export interface Flashcard {
+  id: string;
+  word: string;
+  definition: string;
+  translation: string;
+  retentionLevel: number;
+}
+
+export interface ReviewFlashcardResult {
+  id: string;
+  retentionLevel: number;
+  nextReviewAt: string | null;
+}
+
+export interface FlashcardStats {
+  total: number;
+  due: number;
+  mastered: number;
+}

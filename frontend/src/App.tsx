@@ -5,6 +5,7 @@ import { ContentDisplay } from "./components/ContentDisplay";
 import { WordList } from "./components/WordList";
 import { ResultsDisplay } from "./components/ResultsDisplay";
 import { HistoryView } from "./components/HistoryView";
+import { FlashcardsView } from "./components/FlashcardsView";
 import { LoginForm } from "./components/LoginForm";
 import { RegisterForm } from "./components/RegisterForm";
 import { ForgotPasswordForm } from "./components/ForgotPasswordForm";
@@ -22,11 +23,12 @@ type Step =
   | "content"
   | "results"
   | "history"
+  | "flashcards"
   | "login"
   | "register"
   | "forgot-password"
   | "reset-password";
-type ProtectedStep = "topic" | "content" | "results" | "history";
+type ProtectedStep = "topic" | "content" | "results" | "history" | "flashcards";
 
 // A password reset link points at "/?reset_token=..." (no client-side router
 // in this app), so the token is picked up from the URL once on first render.
@@ -178,6 +180,13 @@ function App() {
           </button>
           <button
             type="button"
+            className={step === "flashcards" ? "active" : ""}
+            onClick={() => goToProtected("flashcards")}
+          >
+            Flashcards
+          </button>
+          <button
+            type="button"
             className={step === "history" ? "active" : ""}
             onClick={() => goToProtected("history")}
           >
@@ -277,6 +286,8 @@ function App() {
       {step === "results" && user && (
         <ResultsDisplay results={results} onRestart={handleRestart} onRetry={handleRetryResults} />
       )}
+
+      {step === "flashcards" && user && <FlashcardsView language={language} />}
 
       {step === "history" && user && <HistoryView language={language} />}
     </div>

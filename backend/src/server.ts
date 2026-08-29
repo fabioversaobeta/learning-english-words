@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import { topicsRouter } from "./routes/topics";
 import { wordsRouter } from "./routes/words";
+import { flashcardsRouter } from "./routes/flashcards";
 import { authRouter } from "./routes/auth";
 import { errorHandler } from "./middleware/errorHandler";
 import { generalLimiter } from "./middleware/rateLimit";
@@ -52,6 +53,7 @@ app.get("/health", (_req, res) => {
 app.use("/api/auth", authRouter);
 app.use("/api/topics", topicsRouter);
 app.use("/api/words", wordsRouter);
+app.use("/api/flashcards", flashcardsRouter);
 
 app.use(errorHandler);
 
