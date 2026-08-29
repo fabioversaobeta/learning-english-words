@@ -1,4 +1,13 @@
-import type { Topic, TopicDetail, TopicSummary, WordResult } from "../types";
+import type {
+  Flashcard,
+  FlashcardRating,
+  FlashcardStats,
+  ReviewFlashcardResult,
+  Topic,
+  TopicDetail,
+  TopicSummary,
+  WordResult,
+} from "../types";
 import { apiRequest } from "../api/client";
 
 function post<T>(path: string, body: unknown): Promise<T> {
@@ -19,5 +28,25 @@ export function useApi() {
 
   const getTopicDetail = (topicId: string) => apiRequest<TopicDetail>(`/api/topics/${topicId}`);
 
-  return { createTopic, translateWords, retryWords, getTopics, getTopicDetail };
+  const getFlashcardQueue = (language: string, limit = 20) =>
+    apiRequest<{ cards: Flashcard[] }>(
+      `/api/flashcards/queue?language=${encodeURIComponent(language)}&limit=${limit}`
+    );
+
+  const getFlashcardStats = (language: string) =>
+    apiRequest<FlashcardStats>(`/api/flashcards/stats?language=${encodeURIComponent(language)}`);
+
+  const reviewFlashcard = (id: string, rating: FlashcardRating) =>
+    post<ReviewFlashcardResult>(`/api/flashcards/${id}/review`, { rating });
+
+  return {
+    createTopic,
+    translateWords,
+    retryWords,
+    getTopics,
+    getTopicDetail,
+    getFlashcardQueue,
+    getFlashcardStats,
+    reviewFlashcard,
+  };
 }

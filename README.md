@@ -74,6 +74,21 @@ npm run dev
 5. Ao confirmar, o backend pede à Claude a definição (em inglês) e a tradução PT-BR de
    cada palavra, sempre no mesmo formato, e tudo é salvo no banco, vinculado à sua conta.
 
+## Flashcards
+
+A aba **Flashcards** revisa as palavras que você já marcou, com repetição espaçada leve:
+
+- Cada palavra em `words_learned` tem um `retention_level` (0 = não sei / nova, 1 = tenho
+  dúvida, 2–5 = confiança crescente) e um `next_review_at` que agenda a próxima aparição.
+- O card mostra só a palavra (frente); "Revelar tradução" (ou clique no card) exibe a
+  definição e a tradução (verso). Há um botão de áudio para ouvir a pronúncia (Web Speech API).
+- Avaliação: 🟢 **Aprendi** sobe o nível e adia a revisão; 🟡 **Tenho dúvida** fixa o nível
+  intermediário (volta em ~1 dia); 🔴 **Não sei** zera o nível e reinsere a palavra no fim
+  do deck da sessão atual, além de deixá-la vencida para a próxima sessão.
+- A fila (`GET /api/flashcards/queue`) traz só os cards vencidos, um por palavra distinta,
+  filtrados pelo idioma de tradução selecionado. Palavras novas entram vencidas, então basta
+  voltar aqui de tempos em tempos conforme você adiciona mais assuntos.
+
 ## Deploy (planejado)
 
 - Frontend → Vercel
