@@ -53,6 +53,11 @@ export function ResultsDisplay({ results, onRestart, onRetry }: ResultsDisplayPr
             <p>
               <strong>Translation:</strong> {r.translation}
             </p>
+            {r.example && (
+              <p className="word-example">
+                <strong>Example:</strong> <em>{r.example}</em>
+              </p>
+            )}
           </div>
         ))}
       </div>

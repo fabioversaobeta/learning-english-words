@@ -240,6 +240,12 @@ function FlashcardStudy({
               <strong>Tradução</strong>
               {card.translation}
             </p>
+            {card.example && (
+              <p className="flashcard-section flashcard-example">
+                <strong>Exemplo</strong>
+                <em>{card.example}</em>
+              </p>
+            )}
           </div>
           <div className="flashcard-feedback">
             <button

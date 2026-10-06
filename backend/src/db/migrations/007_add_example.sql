@@ -1,0 +1,1 @@
+ALTER TABLE words_learned ADD COLUMN example TEXT NOT NULL DEFAULT '';

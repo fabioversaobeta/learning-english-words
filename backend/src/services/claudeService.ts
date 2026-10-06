@@ -36,6 +36,7 @@ Return only the text, no preamble.`,
 interface WordEntry {
   definition: string;
   translation: string;
+  example?: string;
 }
 
 export const LANGUAGE_NAMES: Record<string, string> = {
@@ -61,18 +62,19 @@ export async function translateWords(
   try {
     message = await client.messages.create({
       model: MODEL,
-      max_tokens: 1536,
+      max_tokens: 2048,
       messages: [
         {
           role: "user",
           content: `For each English word or expression below, provide:
 1. "definition": a dictionary-style definition in English.
 2. "translation": the ${languageName} translation.
+3. "example": one natural English sentence using the word/expression, showing how it is used in context (keep it short and clear, suitable for an intermediate learner).
 
 Words: ${words.join(", ")}
 
 Respond with ONLY a JSON object, no markdown fences, no extra text, in this exact shape:
-{ "word": { "definition": "...", "translation": "..." }, ... }
+{ "word": { "definition": "...", "translation": "...", "example": "..." }, ... }
 Use the exact same word/casing as given as the key.`,
         },
       ],

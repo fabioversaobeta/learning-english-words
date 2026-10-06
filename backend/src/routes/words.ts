@@ -61,15 +61,16 @@ wordsRouter.post(
         word,
         definition: entry?.definition ?? DEFINITION_UNAVAILABLE,
         translation: entry?.translation ?? TRANSLATION_UNAVAILABLE,
+        example: entry?.example ?? "",
       };
     });
 
     await Promise.all(
       results.map((r) =>
         pool.query(
-          `INSERT INTO words_learned (user_id, topic_id, english_word, definition, translation, language)
-           VALUES ($1, $2, $3, $4, $5, $6)`,
-          [req.userId, topicId, r.word, r.definition, r.translation, language]
+          `INSERT INTO words_learned (user_id, topic_id, english_word, definition, translation, example, language)
+           VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+          [req.userId, topicId, r.word, r.definition, r.translation, r.example, language]
         )
       )
     );
@@ -108,15 +109,16 @@ wordsRouter.post(
         word,
         definition: entry?.definition ?? DEFINITION_UNAVAILABLE,
         translation: entry?.translation ?? TRANSLATION_UNAVAILABLE,
+        example: entry?.example ?? "",
       };
     });
 
     await Promise.all(
       results.map((r) =>
         pool.query(
-          `UPDATE words_learned SET definition = $1, translation = $2, language = $3
-           WHERE user_id = $4 AND topic_id = $5 AND english_word = $6`,
-          [r.definition, r.translation, language, req.userId, topicId, r.word]
+          `UPDATE words_learned SET definition = $1, translation = $2, example = $3, language = $4
+           WHERE user_id = $5 AND topic_id = $6 AND english_word = $7`,
+          [r.definition, r.translation, r.example, language, req.userId, topicId, r.word]
         )
       )
     );

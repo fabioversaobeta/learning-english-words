@@ -492,6 +492,10 @@
   border-left-color: var(--err);
 }
 
+.result-card .word-example em {
+  font-style: italic;
+}
+
 .result-card h3 {
   display: flex;
   align-items: center;

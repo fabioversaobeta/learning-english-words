@@ -19,6 +19,7 @@ export interface WordResult {
   word: string;
   definition: string;
   translation: string;
+  example: string;
 }
 
 export interface TranslateWordsResponse {
@@ -44,6 +45,7 @@ export interface Flashcard {
   word: string;
   definition: string;
   translation: string;
+  example: string;
   retentionLevel: number;
 }
 

@@ -41,13 +41,14 @@ flashcardsRouter.get(
         : DEFAULT_QUEUE_LIMIT;
 
     const result = await pool.query(
-      `SELECT id, word, definition, translation, retention_level
+      `SELECT id, word, definition, translation, example, retention_level
        FROM (
          SELECT DISTINCT ON (lower(english_word))
            id,
            english_word AS word,
            definition,
            translation,
+           example,
            retention_level
          FROM words_learned
          WHERE user_id = $1
@@ -68,6 +69,7 @@ flashcardsRouter.get(
         word: row.word,
         definition: row.definition,
         translation: row.translation,
+        example: row.example,
         retentionLevel: row.retention_level,
       })),
     };
