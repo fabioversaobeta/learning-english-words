@@ -154,7 +154,11 @@ topicsRouter.post(
     } catch (err) {
       // Don't leave the user's daily slot consumed by a topic that has no content.
       await pool.query(`DELETE FROM topics WHERE id = $1`, [topicId]);
-      throw err;
+      console.error("Failed to generate topic content", err);
+      res.status(502).json({
+        error:
+          "Could not generate the topic content right now. Your daily topic was not used, please try again in a few minutes.",
+      });
     }
   })
 );

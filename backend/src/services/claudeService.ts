@@ -1,6 +1,12 @@
 import Anthropic from "@anthropic-ai/sdk";
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+// API keys that aren't scoped to a workspace must send the workspace id header.
+const workspaceId = process.env.ANTHROPIC_WORKSPACE_ID;
+
+const client = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY,
+  defaultHeaders: workspaceId ? { "anthropic-workspace-id": workspaceId } : undefined,
+});
 
 const MODEL = "claude-haiku-4-5-20251001";
 
