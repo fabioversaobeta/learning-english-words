@@ -24,6 +24,11 @@ export function useApi() {
   const retryWords = (topicId: string, words: string[], language: string) =>
     post<{ results: WordResult[] }>("/api/words/retry", { topicId, words, language });
 
+  const getMissingExamplesCount = () =>
+    apiRequest<{ count: number }>("/api/words/missing-examples");
+
+  const fillMissingExamples = () => post<{ remaining: number }>("/api/words/fill-examples", {});
+
   const getTopics = () => apiRequest<{ topics: TopicSummary[] }>("/api/topics");
 
   const getTopicDetail = (topicId: string) => apiRequest<TopicDetail>(`/api/topics/${topicId}`);
@@ -43,6 +48,8 @@ export function useApi() {
     createTopic,
     translateWords,
     retryWords,
+    getMissingExamplesCount,
+    fillMissingExamples,
     getTopics,
     getTopicDetail,
     getFlashcardQueue,
