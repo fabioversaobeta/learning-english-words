@@ -113,14 +113,17 @@ wordsRouter.post(
       };
     });
 
+    // Don't overwrite stored rows with placeholders when generation failed for a word.
     await Promise.all(
-      results.map((r) =>
-        pool.query(
-          `UPDATE words_learned SET definition = $1, translation = $2, example = $3, language = $4
-           WHERE user_id = $5 AND topic_id = $6 AND english_word = $7`,
-          [r.definition, r.translation, r.example, language, req.userId, topicId, r.word]
+      results
+        .filter((r) => r.definition !== DEFINITION_UNAVAILABLE)
+        .map((r) =>
+          pool.query(
+            `UPDATE words_learned SET definition = $1, translation = $2, example = $3, language = $4
+             WHERE user_id = $5 AND topic_id = $6 AND english_word = $7`,
+            [r.definition, r.translation, r.example, language, req.userId, topicId, r.word]
+          )
         )
-      )
     );
 
     const response: TranslateWordsResponse = { results };

@@ -56,7 +56,22 @@ export const LANGUAGE_NAMES: Record<string, string> = {
   "zh-CN": "Simplified Chinese",
 };
 
+// Each entry takes ~100 output tokens, so large lists are split to avoid truncated JSON.
+const TRANSLATE_BATCH_SIZE = 10;
+
 export async function translateWords(
+  words: string[],
+  language: string
+): Promise<Record<string, WordEntry>> {
+  const batches: string[][] = [];
+  for (let i = 0; i < words.length; i += TRANSLATE_BATCH_SIZE) {
+    batches.push(words.slice(i, i + TRANSLATE_BATCH_SIZE));
+  }
+  const parts = await Promise.all(batches.map((batch) => translateBatch(batch, language)));
+  return Object.assign({}, ...parts);
+}
+
+async function translateBatch(
   words: string[],
   language: string
 ): Promise<Record<string, WordEntry>> {
