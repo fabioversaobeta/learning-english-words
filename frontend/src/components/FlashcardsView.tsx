@@ -243,7 +243,18 @@ function FlashcardStudy({
             {card.example && (
               <p className="flashcard-section flashcard-example">
                 <strong>Exemplo</strong>
-                <em>{card.example}</em>
+                <em>{card.example}</em>{" "}
+                {onSpeak && (
+                  <button
+                    type="button"
+                    className="flashcard-audio flashcard-audio--sm"
+                    onClick={() => onSpeak(card.example!)}
+                    aria-label="Ouvir pronúncia da frase de exemplo"
+                    title="Ouvir pronúncia"
+                  >
+                    🔊
+                  </button>
+                )}
               </p>
             )}
           </div>
