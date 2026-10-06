@@ -19,6 +19,7 @@ export interface WordResult {
   word: string;
   definition: string;
   translation: string;
+  example: string;
 }
 
 export interface TranslateWordsResponse {

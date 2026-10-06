@@ -53,7 +53,7 @@ topicsRouter.get(
     }
 
     const wordsResult = await pool.query(
-      `SELECT english_word, definition, translation FROM words_learned
+      `SELECT english_word, definition, translation, example FROM words_learned
        WHERE topic_id = $1 AND user_id = $2
        ORDER BY learned_at ASC`,
       [id, req.userId]
@@ -70,6 +70,7 @@ topicsRouter.get(
         word: row.english_word,
         definition: row.definition,
         translation: row.translation,
+        example: row.example,
       })),
     };
 
