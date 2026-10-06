@@ -19,13 +19,19 @@ function formatDate(iso: string) {
 }
 
 export function HistoryView({ language }: HistoryViewProps) {
-  const { getTopics, getTopicDetail, translateWords, retryWords } = useApi();
+  const { getTopics, getTopicDetail, translateWords,
+    retryWords,
+    getMissingExamplesCount,
+    fillMissingExamples,
+  } = useApi();
   const [topics, setTopics] = useState<TopicSummary[] | null>(null);
   const [detail, setDetail] = useState<TopicDetail | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [translating, setTranslating] = useState(false);
   const [retrying, setRetrying] = useState(false);
+  const [missingExamples, setMissingExamples] = useState(0);
+  const [fillingExamples, setFillingExamples] = useState(false);
   const { selectedWords, toggleWord, removeWord, reset } = useWordSelection();
 
   useEffect(() => {
@@ -34,6 +40,27 @@ export function HistoryView({ language }: HistoryViewProps) {
       .then((data) => setTopics(data.topics))
       .catch((err) => setError(err instanceof Error ? err.message : "Failed to load history"));
   }, []);
+
+  useEffect(() => {
+    if (detail) return;
+    getMissingExamplesCount()
+      .then((data) => setMissingExamples(data.count))
+      .catch(() => setMissingExamples(0));
+  }, [detail]);
+
+  const handleFillExamples = async () => {
+    setFillingExamples(true);
+    setError(null);
+    try {
+      const { remaining } = await fillMissingExamples();
+      setMissingExamples(remaining);
+      if (remaining > 0) setError("Some example sentences could not be generated. Try again.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to fill example sentences");
+    } finally {
+      setFillingExamples(false);
+    }
+  };
 
   const knownWords = useMemo(() => detail?.words.map((w) => w.word) ?? [], [detail]);
 
@@ -165,6 +192,18 @@ export function HistoryView({ language }: HistoryViewProps) {
     <div className="history-list">
       <h2>Topic history</h2>
       {error && <div className="error-banner">{error}</div>}
+      {missingExamples > 0 && (
+        <div className="retry-banner">
+          <span>
+            {missingExamples === 1
+              ? "1 word has no example sentence."
+              : `${missingExamples} words have no example sentence.`}
+          </span>
+          <button type="button" onClick={handleFillExamples} disabled={fillingExamples}>
+            {fillingExamples ? "Filling..." : "Fill examples"}
+          </button>
+        </div>
+      )}
       {loading && <p className="hint">Loading...</p>}
       {topics === null && !error && <p className="hint">Loading...</p>}
       {topics && topics.length === 0 && (

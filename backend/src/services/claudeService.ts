@@ -98,3 +98,44 @@ Use the exact same word/casing as given as the key.`,
     return {};
   }
 }
+
+export async function generateExamples(words: string[]): Promise<Record<string, string>> {
+  if (words.length === 0) return {};
+
+  let message: Anthropic.Messages.Message;
+  try {
+    message = await client.messages.create({
+      model: MODEL,
+      max_tokens: 2048,
+      messages: [
+        {
+          role: "user",
+          content: `For each English word or expression below, write one natural English sentence using it, showing how it is used in context (short and clear, suitable for an intermediate learner).
+
+Words: ${words.join(", ")}
+
+Respond with ONLY a JSON object, no markdown fences, no extra text, in this exact shape:
+{ "word": "example sentence", ... }
+Use the exact same word/casing as given as the key.`,
+        },
+      ],
+    });
+  } catch (err) {
+    console.error("generateExamples: Claude API call failed", err);
+    return {};
+  }
+
+  const text = extractText(message);
+  const jsonMatch = text.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) {
+    console.error("generateExamples: no JSON object found in Claude response:", text);
+    return {};
+  }
+
+  try {
+    return JSON.parse(jsonMatch[0]);
+  } catch (err) {
+    console.error("generateExamples: failed to parse JSON from Claude response:", text, err);
+    return {};
+  }
+}
