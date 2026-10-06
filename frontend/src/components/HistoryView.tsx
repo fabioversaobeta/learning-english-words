@@ -178,7 +178,7 @@ export function HistoryView({ language }: HistoryViewProps) {
               </p>
               {w.example && (
                 <p className="word-example">
-                  <strong>Example:</strong> <em>{w.example}</em>
+                  <strong>Example:</strong> <em>{w.example}</em> <SpeakButton word={w.example} />
                 </p>
               )}
             </div>

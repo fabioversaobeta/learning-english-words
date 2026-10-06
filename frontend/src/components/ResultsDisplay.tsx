@@ -55,7 +55,7 @@ export function ResultsDisplay({ results, onRestart, onRetry }: ResultsDisplayPr
             </p>
             {r.example && (
               <p className="word-example">
-                <strong>Example:</strong> <em>{r.example}</em>
+                <strong>Example:</strong> <em>{r.example}</em> <SpeakButton word={r.example} />
               </p>
             )}
           </div>
