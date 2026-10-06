@@ -37,3 +37,30 @@ export interface TopicDetailResponse extends TopicSummary {
   content: string;
   words: WordResult[];
 }
+
+export type FlashcardRating = "known" | "doubt" | "unknown";
+
+export interface Flashcard {
+  id: string;
+  word: string;
+  definition: string;
+  translation: string;
+  example: string;
+  retentionLevel: number;
+}
+
+export interface FlashcardQueueResponse {
+  cards: Flashcard[];
+}
+
+export interface ReviewFlashcardResponse {
+  id: string;
+  retentionLevel: number;
+  nextReviewAt: string | null;
+}
+
+export interface FlashcardStatsResponse {
+  total: number;
+  due: number;
+  mastered: number;
+}

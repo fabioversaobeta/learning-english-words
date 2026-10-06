@@ -4,7 +4,12 @@ import { translateWords } from "../services/claudeService";
 import { asyncHandler } from "../middleware/errorHandler";
 import { requireAuth } from "../middleware/auth";
 import { translateLimiter } from "../middleware/rateLimit";
-import { MAX_WORD_LENGTH, MAX_WORDS_PER_REQUEST } from "../constants";
+import {
+  DEFINITION_UNAVAILABLE,
+  MAX_WORD_LENGTH,
+  MAX_WORDS_PER_REQUEST,
+  TRANSLATION_UNAVAILABLE,
+} from "../constants";
 import { TranslateWordsRequest, TranslateWordsResponse, WordResult } from "../types";
 
 export const wordsRouter = Router();
@@ -54,8 +59,8 @@ wordsRouter.post(
       const entry = translations[word];
       return {
         word,
-        definition: entry?.definition ?? "Definition not available.",
-        translation: entry?.translation ?? "Translation not available.",
+        definition: entry?.definition ?? DEFINITION_UNAVAILABLE,
+        translation: entry?.translation ?? TRANSLATION_UNAVAILABLE,
         example: entry?.example ?? "",
       };
     });
@@ -102,8 +107,8 @@ wordsRouter.post(
       const entry = translations[word];
       return {
         word,
-        definition: entry?.definition ?? "Definition not available.",
-        translation: entry?.translation ?? "Translation not available.",
+        definition: entry?.definition ?? DEFINITION_UNAVAILABLE,
+        translation: entry?.translation ?? TRANSLATION_UNAVAILABLE,
         example: entry?.example ?? "",
       };
     });
